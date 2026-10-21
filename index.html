@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Рынок ИКТ Кыргызстана</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="logo">ИКТ</span><div><b>Рынок ИКТ</b><small>Кыргызстан</small></div></div>
+    <nav>
+      <button data-view="dashboard" class="active">Главная панель</button>
+      <button data-view="companies">Компании</button>
+      <button data-view="services">Услуги и продукты</button>
+      <button data-view="analytics">Аналитика рынка</button>
+      <button data-view="stats">Статистика и динамика</button>
+      <button data-view="register">Регистрация компании</button>
+    </nav>
+    <button class="reset" id="resetBtn">Сбросить демо-данные</button>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger" aria-label="Меню">☰</button>
+      <h1 id="viewTitle">Главная панель</h1>
+    </header>
+    <div class="demo-note">Данные в системе демонстрационные и не подтверждены официальной статистикой. Для анализа используйте данные Нацстаткома КР и Минцифры КР.</div>
+
+    <main>
+      <!-- Главная панель -->
+      <section id="view-dashboard" class="view active">
+        <div class="cards" id="kpiCards"></div>
+        <div class="grid2">
+          <div class="panel"><h3>Компании по направлениям</h3><div class="chart-box"><canvas id="chDashCats"></canvas></div></div>
+          <div class="panel"><h3>Выручка ИКТ-сектора, млрд сом (демо)</h3><div class="chart-box"><canvas id="chDashRev"></canvas></div></div>
+        </div>
+      </section>
+
+      <!-- Компании -->
+      <section id="view-companies" class="view">
+        <div class="toolbar">
+          <input type="search" id="cSearch" placeholder="Поиск по названию, городу, описанию…">
+          <select id="cCat"></select>
+          <select id="cCity"></select>
+          <select id="cSort">
+            <option value="name">По названию</option>
+            <option value="revenue">По выручке</option>
+            <option value="employees">По числу сотрудников</option>
+            <option value="founded">По году основания</option>
+          </select>
+          <button class="btn" id="cAdd">+ Добавить</button>
+          <button class="btn ghost" id="cExport">Экспорт CSV</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Компания</th><th>Направление</th><th>Город</th><th>Сотрудники</th><th>Год</th><th>Выручка, млн сом</th><th>Контакты</th><th></th></tr></thead>
+          <tbody id="cBody"></tbody>
+        </table></div>
+        <p class="count" id="cCount"></p>
+      </section>
+
+      <!-- Услуги -->
+      <section id="view-services" class="view">
+        <div class="toolbar">
+          <input type="search" id="sSearch" placeholder="Поиск услуги, ПО или продукта…">
+          <select id="sType"></select>
+          <select id="sDir"></select>
+          <button class="btn" id="sAdd">+ Добавить</button>
+          <button class="btn ghost" id="sExport">Экспорт CSV</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Название</th><th>Тип</th><th>Компания</th><th>Направление</th><th>Цена, сом</th><th></th></tr></thead>
+          <tbody id="sBody"></tbody>
+        </table></div>
+        <p class="count" id="sCount"></p>
+      </section>
+
+      <!-- Аналитика -->
+      <section id="view-analytics" class="view">
+        <div class="grid2">
+          <div class="panel"><h3>Выручка компаний, млн сом (топ-8)</h3><div class="chart-box"><canvas id="chTopRev"></canvas></div></div>
+          <div class="panel"><h3>Сотрудники по городам</h3><div class="chart-box"><canvas id="chCity"></canvas></div></div>
+          <div class="panel"><h3>Средняя цена по типам, сом</h3><div class="chart-box"><canvas id="chPrice"></canvas></div></div>
+          <div class="panel"><h3>Доля выручки по направлениям</h3><div class="chart-box"><canvas id="chShare"></canvas></div></div>
+        </div>
+      </section>
+
+      <!-- Статистика -->
+      <section id="view-stats" class="view">
+        <div class="toolbar">
+          <button class="btn" id="stAdd">+ Добавить год</button>
+          <button class="btn ghost" id="stExport">Экспорт CSV</button>
+        </div>
+        <div class="grid2">
+          <div class="panel"><h3>Пользователи интернета, % населения</h3><div class="chart-box"><canvas id="chNet"></canvas></div></div>
+          <div class="panel"><h3>Экспорт ИТ-услуг, млн $</h3><div class="chart-box"><canvas id="chExp"></canvas></div></div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Год</th><th>Выручка ИКТ, млрд сом</th><th>Интернет, %</th><th>Моб. связь на 100 жит.</th><th>Экспорт ИТ, млн $</th><th>Доля в ВВП, %</th><th></th></tr></thead>
+          <tbody id="stBody"></tbody>
+        </table></div>
+        <p class="count" id="stGrowth"></p>
+      </section>
+
+      <!-- Регистрация -->
+      <section id="view-register" class="view">
+        <div class="panel form-panel">
+          <h3 id="formTitle">Регистрация IT-компании</h3>
+          <form id="cForm" novalidate>
+            <input type="hidden" id="fId">
+            <div class="form-grid">
+              <label>Название*<input id="fName" required maxlength="80"></label>
+              <label>Направление*<select id="fCat" required></select></label>
+              <label>Город*<select id="fCity" required></select></label>
+              <label>Год основания*<input id="fYear" type="number" min="1991" max="2030" required></label>
+              <label>Сотрудников*<input id="fEmp" type="number" min="1" required></label>
+              <label>Выручка, млн сом<input id="fRev" type="number" min="0" step="0.1"></label>
+              <label>Сайт<input id="fSite" placeholder="example.kg"></label>
+              <label>Email<input id="fEmail" type="email"></label>
+              <label>Телефон<input id="fPhone" placeholder="+996 …"></label>
+              <label class="wide">Описание<textarea id="fDesc" rows="3" maxlength="300"></textarea></label>
+            </div>
+            <p class="error" id="fError"></p>
+            <div class="form-actions">
+              <button type="submit" class="btn" id="fSubmit">Зарегистрировать</button>
+              <button type="button" class="btn ghost" id="fCancel">Очистить форму</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Диалог услуги -->
+  <dialog id="sDialog">
+    <form id="sForm" novalidate>
+      <h3 id="sDlgTitle">Новая запись</h3>
+      <input type="hidden" id="sId">
+      <label>Название*<input id="sName" required maxlength="80"></label>
+      <label>Тип*<select id="sTypeF"></select></label>
+      <label>Компания*<select id="sCompany"></select></label>
+      <label>Направление*<select id="sDirF"></select></label>
+      <label>Цена, сом*<input id="sPrice" type="number" min="0" required></label>
+      <p class="error" id="sError"></p>
+      <div class="form-actions">
+        <button type="submit" class="btn">Сохранить</button>
+        <button type="button" class="btn ghost" id="sCancel">Отмена</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Диалог статистики -->
+  <dialog id="stDialog">
+    <form id="stForm" novalidate>
+      <h3 id="stDlgTitle">Показатели за год</h3>
+      <label>Год*<input id="stYear" type="number" min="2000" max="2035" required></label>
+      <label>Выручка ИКТ, млрд сом*<input id="stRev" type="number" step="0.1" min="0" required></label>
+      <label>Пользователи интернета, %*<input id="stNet" type="number" step="0.1" min="0" max="100" required></label>
+      <label>Моб. связь на 100 жителей*<input id="stMob" type="number" step="0.1" min="0" required></label>
+      <label>Экспорт ИТ-услуг, млн $*<input id="stExp" type="number" step="0.1" min="0" required></label>
+      <label>Доля ИКТ в ВВП, %*<input id="stGdp" type="number" step="0.1" min="0" required></label>
+      <p class="error" id="stError"></p>
+      <div class="form-actions">
+        <button type="submit" class="btn">Сохранить</button>
+        <button type="button" class="btn ghost" id="stCancel">Отмена</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
